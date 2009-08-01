@@ -7,6 +7,8 @@ h2. Usage
 <pre>
 <code class="ruby">
   class OfficeWorker
+    include Newflow # will add attr_accessor :workflow_state unless it already exists
+
     def define_workflow
       state :start do
         transitions_to :sleeping_under_desk, :unless => :boss_is_there?
