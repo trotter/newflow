@@ -1,0 +1,45 @@
+= Newflow
+
+Newflow lets you decorate ruby classes with workflows. It also has a cool .dot generation tool for visualizing your workflows. 
+
+= Usage
+
+  class OfficeWorker
+    def define_workflow
+      state :start do
+        transitions_to :sleeping_under_desk, :unless => :boss_is_there?
+        transitions_to :answering_phones, :if => :boss_is_there?
+      end
+
+      state :sleeping_under_desk do
+        transitions_to :answering_phones, :if => :phones_are_ringing?
+      end
+
+      state :answering_phones do
+        transitions_to :going_home, :if => :after_five?, :trigger => :shutdown_computer
+      end
+
+      state :going_home, :stop => true
+    end
+
+    def boss_is_there?
+      boss.at_work?
+    end
+
+    def phones_are_ringing?
+      phones.detect { |p| p.ringing? }
+    end
+
+    def after_five?
+      Time.now.hour >= 17
+    end
+
+    def shutdown_computer
+      `shutdown -h now`
+    end
+  end
+
+= Caveats
+
+None of the code is in this project yet, so yea... the above doesn't *actually* work. Get ready though, it's gonna be awesome!
+
