@@ -1,9 +1,11 @@
-= Newflow
+h1. Newflow
 
 Newflow lets you decorate ruby classes with workflows. It also has a cool .dot generation tool for visualizing your workflows. 
 
-= Usage
+h2. Usage
 
+<pre>
+<code class="ruby">
   class OfficeWorker
     def define_workflow
       state :start do
@@ -38,8 +40,10 @@ Newflow lets you decorate ruby classes with workflows. It also has a cool .dot g
       `shutdown -h now`
     end
   end
+</code>
+</pre>
 
-= Caveats
+h2. Caveats
 
 None of the code is in this project yet, so yea... the above doesn't *actually* work. Get ready though, it's gonna be awesome!
 
