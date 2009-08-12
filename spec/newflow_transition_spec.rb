@@ -20,6 +20,14 @@ describe "An :if symbol transition with a symbol trigger" do
     @workflow.should_receive(:some_action)
     @transition.trigger!(@workflow)
   end
+
+  it "should have a predicate name" do
+    @transition.predicate_name.should == "predicate?"
+  end
+
+  it "should have a target state" do
+    @transition.target_state.should == :target_state
+  end
 end
 
 describe "An :unless symbol transition with a proc trigger" do
@@ -43,6 +51,10 @@ describe "An :unless symbol transition with a proc trigger" do
   it "should call the trigger when requested" do
     @transition.trigger!(@workflow)
     @trigger_ran.should be_true
+  end
+
+  it "should have a predicate name" do
+    @transition.predicate_name.should == "!predicate?"
   end
 end
 

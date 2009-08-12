@@ -12,19 +12,19 @@ module Newflow
           && !(if_meth && unless_meth) 
         raise "You must specify a target state(#@target_state) and (if_method OR unless_method)" 
       end
-      @predicate_name = if_meth || "!#{unless_meth}"
+      @predicate_name = (if_meth || "!#{unless_meth}").to_s
       @predicate = if if_meth
                      # TODO: be smart
-                     if if_meth.is_a?(Symbol)
-                       lambda { |wf| wf.send(if_meth) }
-                     else
+                     if if_meth.respond_to?(:call)
                        lambda { |wf| if_meth.call }
+                     else
+                       lambda { |wf| wf.send(if_meth) }
                      end
                    else
-                     if unless_meth.is_a?(Symbol)
-                       lambda { |wf| !wf.send(unless_meth) }
-                     else
+                     if unless_meth.respond_to?(:call)
                        lambda { |wf| !unless_meth.call }
+                     else
+                       lambda { |wf| !wf.send(unless_meth) }
                      end
                    end
     end
