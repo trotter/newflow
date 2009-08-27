@@ -3,6 +3,8 @@ require 'spec/rake/spectask'
 
 SPEC_FILES = FileList['spec/*_spec.rb']
 
+task :default => :spec
+
 desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_files = SPEC_FILES
