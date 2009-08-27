@@ -11,7 +11,7 @@ module Newflow
     @logger = if defined?(Rails)
                 Rails.logger
               else
-                Logger.new($stderr)
+                Logger.new(File.open('/dev/null', 'w'))
               end
   end
 
