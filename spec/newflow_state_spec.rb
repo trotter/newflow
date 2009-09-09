@@ -28,3 +28,19 @@ describe "A valid start state" do
   end
 end
 
+describe "A valid stop state" do
+  before do
+    @name  = :stop
+    @state = Newflow::State.new(@name, :stop => true)
+  end
+
+  it "should be a stop" do
+    @state.should be_stop
+  end
+end
+
+describe "Invalid states" do
+  it "should not have both a start and a stop" do
+    lambda { @state = Newflow::State.new(:hi, :start => true, :stop => true) }.should raise_error
+  end
+end

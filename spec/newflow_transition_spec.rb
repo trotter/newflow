@@ -98,3 +98,12 @@ describe "An :unless proc transition with no trigger" do
   end
 end
 
+describe "Invalid triggers" do
+  it "should not be valid without an if or unless" do
+    lambda { @transition = Newflow::Transition.new(:target_state) }.should raise_error
+  end
+
+  it "should not be valid with an if and an unless" do
+    lambda { @transition = Newflow::Transition.new(:target_state, :unless => :unless, :if => :if) }.should raise_error
+  end
+end
