@@ -12,6 +12,10 @@ describe "A workflow with no states" do
   it "should not validate" do
     lambda { @obj.construct_workflow! }.should raise_error(RuntimeError)
   end
+
+  it "should not consume all methods with method missing" do
+    lambda { @obj.bogus_meth }.should raise_error(NoMethodError)
+  end
 end
 
 describe "A workflow with one state" do
@@ -53,6 +57,8 @@ describe "The minimal valid workflow" do
     @obj = klass.new
     @obj.construct_workflow!
   end
+
+  it "should use a class level method and not an instance method to define workflows"
 
   it "should validate" do
     lambda { @obj.validate_workflow! }.should_not raise_error(RuntimeError)
