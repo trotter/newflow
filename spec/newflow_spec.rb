@@ -1,48 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "A workflow with no states" do
-  before do
-    klass = Class.new do
-      attr_accessor :workflow_state
-      include Newflow
-    end
-    @obj = klass.new
-  end
-
-  it "should not validate" do
-    lambda { @obj.construct_workflow! }.should raise_error(RuntimeError)
-  end
-
-  it "should not consume all methods with method missing" do
-    lambda { @obj.bogus_meth }.should raise_error(NoMethodError)
-  end
-end
-
-describe "A workflow with one state" do
+describe "An object including Newflow" do
   before do
     klass = Class.new do
       attr_accessor :workflow_state
       include Newflow
 
-      def define_workflow
-        state :start
-      end
-    end
-    @obj = klass.new
-  end
-
-  it "should not validate" do
-    lambda { @obj.construct_workflow! }.should raise_error(RuntimeError)
-  end
-end
-
-describe "The minimal valid workflow" do
-  before do
-    klass = Class.new do
-      attr_accessor :workflow_state
-      include Newflow
-
-      def define_workflow
+      define_workflow do
         state :start, :start => true do
           transitions_to :finish, :if => :go_to_finish?
         end
@@ -55,13 +19,6 @@ describe "The minimal valid workflow" do
       end
     end
     @obj = klass.new
-    @obj.construct_workflow!
-  end
-
-  it "should use a class level method and not an instance method to define workflows"
-
-  it "should validate" do
-    lambda { @obj.validate_workflow! }.should_not raise_error(RuntimeError)
   end
 
   it "should begin in start state" do
@@ -71,6 +28,19 @@ describe "The minimal valid workflow" do
   it "should stop in the finish state" do
     @obj.transition!
     @obj.should be_finish
+  end
+
+  it "should transition once" do
+    @obj.transition_once!
+    @obj.should be_finish
+  end
+
+  it "should have a current state" do
+    @obj.current_state.should == :start
+  end
+
+  it "should not eat all missing methods" do
+    lambda { @obj.wammo! }.should raise_error(NoMethodError)
   end
 end
 
