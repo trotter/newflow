@@ -9,7 +9,7 @@ h2. Usage
   class OfficeWorker
     include Newflow # will add attr_accessor :workflow_state unless it already exists
 
-    def define_workflow
+    define_workflow do
       state :start do
         transitions_to :sleeping_under_desk, :unless => :boss_is_there?
         transitions_to :answering_phones, :if => :boss_is_there?
@@ -47,5 +47,5 @@ h2. Usage
 
 h2. Caveats
 
-None of the code is in this project yet, so yea... the above doesn't *actually* work. Get ready though, it's gonna be awesome!
+There's a very real chance this isn't working with Rails right now.
 
