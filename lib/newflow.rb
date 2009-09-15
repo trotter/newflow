@@ -19,21 +19,25 @@ module Newflow
     def workflow
       @workflow ||= Workflow.new(self, self.class.__workflow_definition)
     end
-
-    def method_missing_with_state_query(meth, *args, &block)
-      if meth.to_s =~ /\?$/ && workflow.respond_to?(meth)
-        workflow.send(meth)
-      else
-        method_missing_without_state_query(meth, *args, &block)
-      end
-    end
-    alias_method :method_missing_without_state_query, :method_missing
-    alias_method :method_missing, :method_missing_with_state_query
   end
 
   module ClassMethods
     def define_workflow(&workflow_definition)
       @__workflow_definition = workflow_definition
+      __define_query_methods(workflow_definition)
+    end
+
+    def __define_query_methods(workflow_definition)
+      @state_catcher = Object.new
+      @state_catcher.instance_variable_set("@states", [])
+      def @state_catcher.states; @states; end
+      def @state_catcher.state(name, *args); @states << name; end
+      @state_catcher.instance_eval &workflow_definition
+      @state_catcher.states.each do |state|
+        self.send(:define_method, "#{state}?") do 
+          workflow.send("#{state}?")
+        end
+      end
     end
 
     def __workflow_definition
