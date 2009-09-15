@@ -11,18 +11,35 @@ module Newflow
 
   def self.included(base)
     base.send(:include, InstanceMethods)
+    if base.ancestors.map {|a| a.to_s }.include?("ActiveRecord::Base")
+      base.send(:include, ActiveRecordInstantiator)
+    else
+      base.send(:include, NonActiveRecordInstantiator)
+    end
     base.send(:extend, ClassMethods, Forwardable)
     base.def_delegators :workflow, :transition!, :transition_once!, :current_state, :current_state=
   end
 
-  module InstanceMethods
+  module ActiveRecordInstantiator
+    def after_initialize_with_workflow
+      self.workflow_state = workflow.current_state.to_s
+    end
+    if respond_to?(:after_initialize)
+      alias_method :after_initialize_without_workflow, :after_initialize
+    end
+    alias_method :after_initialize, :after_initialize_with_workflow
+  end
+
+  module NonActiveRecordInstantiator
     def initialize_with_workflow(*args, &block)
       initialize_without_workflow(*args, &block)
       self.workflow_state = workflow.current_state.to_s
     end
     alias_method :initialize_without_workflow, :initialize
     alias_method :initialize, :initialize_with_workflow
+  end
 
+  module InstanceMethods
     def workflow
       @workflow ||= Workflow.new(self, self.class.__workflow_definition)
     end
