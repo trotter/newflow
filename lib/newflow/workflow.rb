@@ -54,6 +54,10 @@ module Newflow
       @extendee.workflow_state.to_sym
     end
 
+    def current_state=(state)
+      @extendee.workflow_state = state.to_s
+    end
+
     def to_dotty
       dot = ""
       dot << "digraph {\n"

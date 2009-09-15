@@ -12,7 +12,7 @@ module Newflow
   def self.included(base)
     base.send(:include, InstanceMethods)
     base.send(:extend, ClassMethods, Forwardable)
-    base.def_delegators :workflow, :transition!, :transition_once!, :current_state
+    base.def_delegators :workflow, :transition!, :transition_once!, :current_state, :current_state=
   end
 
   module InstanceMethods
