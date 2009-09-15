@@ -16,6 +16,13 @@ module Newflow
   end
 
   module InstanceMethods
+    def initialize_with_workflow(*args, &block)
+      initialize_without_workflow(*args, &block)
+      self.workflow_state = workflow.current_state.to_s
+    end
+    alias_method :initialize_without_workflow, :initialize
+    alias_method :initialize, :initialize_with_workflow
+
     def workflow
       @workflow ||= Workflow.new(self, self.class.__workflow_definition)
     end

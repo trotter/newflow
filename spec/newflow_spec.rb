@@ -39,6 +39,10 @@ describe "An object including Newflow" do
     @obj.current_state.should == :start
   end
 
+  it "should have a workflow state" do
+    @obj.workflow_state.should == "start"
+  end
+
   it "should have a way to manually change the current state" do
     @obj.current_state = :finish
     @obj.workflow_state.should == "finish"
