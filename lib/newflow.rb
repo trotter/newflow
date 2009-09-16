@@ -8,6 +8,8 @@ Dir["#{base_dir}/*.rb"].each { |f| require f }
 # TODO: Allow workflows to identify themselves (for logging and stuffs)
 module Newflow
   class InvalidStateDefinitionError < ArgumentError; end
+  WITH_SIDE_EFFECTS    = true
+  WITHOUT_SIDE_EFFECTS = false
 
   def self.included(base)
     base.send(:include, InstanceMethods)
@@ -17,7 +19,8 @@ module Newflow
       base.send(:include, NonActiveRecordInstantiator)
     end
     base.send(:extend, ClassMethods, Forwardable)
-    base.def_delegators :workflow, :transition!, :transition_once!, :current_state, :current_state=
+    base.def_delegators :workflow, :transition!, :transition_once!, :current_state, :current_state=,
+                        :would_transition_to
   end
 
   module ActiveRecordInstantiator

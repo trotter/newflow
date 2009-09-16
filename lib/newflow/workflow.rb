@@ -37,17 +37,32 @@ module Newflow
       end
     end
 
-    def transition_once!
+    def transition_once!(do_trigger=Newflow::WITH_SIDE_EFFECTS)
       state = states[current_state]
-      @extendee.workflow_state = state.run(@extendee).to_s
+      raise "'#{current_state}' is not a valid state" unless state # TODO: TEST
+      @extendee.workflow_state = state.run(@extendee, do_trigger).to_s
     end
 
-    def transition!
+    def transition!(do_trigger=Newflow::WITH_SIDE_EFFECTS)
       # TODO: watch out for max # of transits
+      previous_state = current_state
+      previous_states = {}
+      num_transitions = 0
       begin
+        if previous_states[current_state]
+          raise "Error: possible [infinite] loop in workflow, started in: #{previous_state}, currently in #{current_state}, been through all of (#{previous_states.keys.map(&:to_s).sort.join(", ")})" # TODO: TEST
+        end
+        previous_states[current_state] = true
         the_state = current_state
-        transition_once!
+        transition_once!(do_trigger)
       end while the_state != current_state && states[current_state]
+      previous_state == current_state ? nil : current_state
+    ensure
+      @extendee.workflow_state = previous_state unless do_trigger
+    end
+
+    def would_transition_to
+      transition!(Newflow::WITHOUT_SIDE_EFFECTS)
     end
 
     def current_state

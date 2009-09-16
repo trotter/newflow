@@ -51,6 +51,12 @@ describe "A workflow" do
       @obj.workflow_state.should == "start"
     end
 
+    it "should be able to transition to the finish state" do
+      state = @workflow.would_transition_to
+      state.should == :finish
+      @workflow.should be_start
+    end
+
     it "should stop in the finish state" do
       @workflow.transition!
       @workflow.should be_finish

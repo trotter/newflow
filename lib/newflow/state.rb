@@ -17,13 +17,13 @@ module Newflow
       @transitions << Transition.new(target_state,opts)
     end
 
-    def run(workflow)
+    def run(workflow, do_trigger=Newflow::WITH_SIDE_EFFECTS)
       return @name unless @transitions
       # We may want to consider looking at all transitions and letting user know
       # that you can move in multiple directions
       transition_to = @transitions.detect { |t| t.can_transition?(workflow) }
       if transition_to
-        transition_to.trigger!(workflow)
+        transition_to.trigger!(workflow) if do_trigger # TODO: TEST
         transition_to.target_state
       else
         @name
