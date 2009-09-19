@@ -24,7 +24,7 @@ module Newflow
     def construct_workflow!(definition)
       instance_eval &definition
       start_state = states.values.detect { |s| s.start? }
-      @extendee.workflow_state = start_state.name.to_s if start_state
+      @extendee.workflow_state ||= start_state.name.to_s if start_state
       validate_workflow!
       define_state_query_methods
     end

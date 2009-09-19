@@ -52,5 +52,11 @@ describe "An object including Newflow" do
   it "should not eat all missing methods" do
     lambda { @obj.wammo! }.should raise_error(NoMethodError)
   end
+
+  it "should keep the state even when the workflow is reset" do
+    @obj.workflow_state = "finish"
+    @obj.instance_variable_set("@workflow", nil)
+    @obj.should be_finish
+  end
 end
 
