@@ -25,7 +25,7 @@ module Newflow
 
   module ActiveRecordInstantiator # TODO: TEST
     def after_initialize_with_workflow
-      after_initialize_without_workflow
+      after_initialize_without_workflow if respond_to?(:after_initialize_without_workflow)
       workflow # This will set the workflow_state
     end
     if respond_to?(:after_initialize)
