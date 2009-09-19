@@ -8,6 +8,16 @@ Dir["#{base_dir}/*.rb"].each { |f| require f }
 # TODO: Allow workflows to identify themselves (for logging and stuffs)
 module Newflow
   class InvalidStateDefinitionError < ArgumentError; end
+  class InvalidWorkflowStateError < ArgumentError; 
+    def initialize(state)
+      @state = state
+    end
+
+    def message
+      "'#{@state}' is not a valid state"
+    end
+  end
+
   WITH_SIDE_EFFECTS    = true
   WITHOUT_SIDE_EFFECTS = false
 

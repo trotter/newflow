@@ -63,6 +63,27 @@ describe "A workflow" do
       @obj.workflow_state.should == "finish"
     end
   end
+
+  describe "A workflow with an invalid object" do
+    before do
+      @definition = lambda {
+        state :start, :start => true do
+          transitions_to :finish, :if => :go_to_finish?
+        end
+
+        state :finish, :stop => true
+      }
+
+      @klass.send(:define_method, :go_to_finish?) do
+        true
+      end
+      @obj.workflow_state = "invalid"
+    end
+
+    it "should raise an error on instantiation" do
+      lambda { Newflow::Workflow.new(@obj, @definition) }.should raise_error(Newflow::InvalidWorkflowStateError)
+    end
+  end
 end
 
 

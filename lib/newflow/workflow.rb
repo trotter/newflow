@@ -27,6 +27,7 @@ module Newflow
       @extendee.workflow_state ||= start_state.name.to_s if start_state
       validate_workflow!
       define_state_query_methods
+      raise InvalidWorkflowStateError.new(current_state) unless states[current_state]
     end
 
     def define_state_query_methods
@@ -39,7 +40,7 @@ module Newflow
 
     def transition_once!(do_trigger=Newflow::WITH_SIDE_EFFECTS)
       state = states[current_state]
-      raise "'#{current_state}' is not a valid state" unless state # TODO: TEST
+      raise InvalidWorkflowStateError.new(current_state) unless state # TODO: TEST
       @extendee.workflow_state = state.run(@extendee, do_trigger).to_s
     end
 
