@@ -23,9 +23,9 @@ module Newflow
                         :would_transition_to
   end
 
-  module ActiveRecordInstantiator
+  module ActiveRecordInstantiator # TODO: TEST
     def after_initialize_with_workflow
-      self.workflow_state = workflow.current_state.to_s
+      self.workflow_state ||= workflow.current_state.to_s
     end
     if respond_to?(:after_initialize)
       alias_method :after_initialize_without_workflow, :after_initialize
@@ -36,7 +36,7 @@ module Newflow
   module NonActiveRecordInstantiator
     def initialize_with_workflow(*args, &block)
       initialize_without_workflow(*args, &block)
-      self.workflow_state = workflow.current_state.to_s
+      self.workflow_state ||= workflow.current_state.to_s # TODO: TEST
     end
     alias_method :initialize_without_workflow, :initialize
     alias_method :initialize, :initialize_with_workflow
