@@ -7,16 +7,21 @@ h2. Usage
 <pre>
 <code class="ruby">
   class OfficeWorker
-    include Newflow # will add attr_accessor :workflow_state unless it already exists
+    attr_accessor :boss, :phones
+    attr_accessor :workflow_state  # Necessary unless you are using Rails
+                                   # In Rails, create a workflow_state column in the db
+
+    include Newflow
 
     define_workflow do
-      state :start do
+      state :at_work, :start => true do
         transitions_to :sleeping_under_desk, :unless => :boss_is_there?
         transitions_to :answering_phones, :if => :boss_is_there?
       end
 
       state :sleeping_under_desk do
         transitions_to :answering_phones, :if => :phones_are_ringing?
+        transitions_to :going_home, :if => :after_five?, :trigger => :shutdown_computer
       end
 
       state :answering_phones do
@@ -26,8 +31,12 @@ h2. Usage
       state :going_home, :stop => true
     end
 
+    def initialize
+      @phones = []
+    end
+
     def boss_is_there?
-      boss.at_work?
+      !!boss
     end
 
     def phones_are_ringing?
@@ -39,13 +48,21 @@ h2. Usage
     end
 
     def shutdown_computer
-      `shutdown -h now`
+      puts "shutdown -h now"
     end
   end
+
+  office_worker = OfficeWorker.new
+  office_worker.at_work?             # => true
+  office_worker.transition!
+  office_worker.to_dotty             # returns a .dot formatted string 
+                                     #   that you can write to a 
+                                     #   file and open with graphviz
+  office_worker.sleeping_under_desk? # => true (because the boss wasn't there)
 </code>
 </pre>
 
 h2. Caveats
 
-There's a very real chance this isn't working with Rails right now.
+None! This thing is awesome!
 
