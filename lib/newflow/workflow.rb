@@ -41,7 +41,12 @@ module Newflow
     def transition_once!(do_trigger=Newflow::WITH_SIDE_EFFECTS)
       state = states[current_state]
       raise InvalidWorkflowStateError.new(current_state) unless state # TODO: TEST
-      @extendee.workflow_state = state.run(@extendee, do_trigger).to_s
+      target_state = states[state.run(@extendee, do_trigger)]
+      if state != target_state
+        @extendee.workflow_state = target_state.to_s
+        target_state.run_on_entry(@extendee, do_trigger)
+      end
+      target_state
     end
 
     def transition!(do_trigger=Newflow::WITH_SIDE_EFFECTS)

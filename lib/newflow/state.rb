@@ -8,6 +8,7 @@ module Newflow
       @opts     = opts
       @is_start = opts[:start]
       @is_stop  = opts[:stop]
+      @on_entry = Trigger.new(opts[:on_entry])
       @transitions = []
       check_validity
       instance_eval &transitions_block if transitions_block
@@ -37,6 +38,14 @@ module Newflow
 
     def stop?
       @opts[:stop]
+    end
+
+    def run_on_entry(workflow, do_trigger=Newflow::WITH_SIDE_EFFECTS)
+      @on_entry.run!(workflow) if do_trigger && @on_entry
+    end
+
+    def to_s
+      @name.to_s
     end
 
     def logger

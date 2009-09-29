@@ -17,6 +17,14 @@ describe "A valid start state" do
     @state.should be_start
   end
 
+  it "should turn itself into a string" do
+    @state.to_s.should == @name.to_s
+  end
+
+  it "should should not bomb when running on entry" do
+    lambda { @state.run_on_entry(@extendee) }.should_not raise_error
+  end
+
   it "should return the transition state when the predicate is true" do
     @workflow.should_receive(:go_to_finish?).and_return true
     @state.run(@workflow).should == :finish
@@ -25,6 +33,24 @@ describe "A valid start state" do
   it "should return the its own state when the predicate is false" do
     @workflow.should_receive(:go_to_finish?).and_return false
     @state.run(@workflow).should == :start
+  end
+end
+
+describe "A state with on_entry" do
+  before do
+    @name = :start
+    @extendee = mock("extendee")
+    @state = Newflow::State.new(@name, :on_entry => :make_pizza)
+  end
+
+  it "should run on entry when triggers are on (default)" do
+    @extendee.should_receive(:make_pizza)
+    @state.run_on_entry(@extendee)
+  end
+
+  it "should not run on entry when triggers are off" do
+    @extendee.should_not_receive(:make_pizza)
+    @state.run_on_entry(@extendee, Newflow::WITHOUT_SIDE_EFFECTS) 
   end
 end
 

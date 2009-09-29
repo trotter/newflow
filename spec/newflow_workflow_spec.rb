@@ -37,11 +37,14 @@ describe "A workflow" do
           transitions_to :finish, :if => :go_to_finish?
         end
 
-        state :finish, :stop => true
+        state :finish, :on_entry => :make_pizza, :stop => true
       }
 
       @klass.send(:define_method, :go_to_finish?) do
         true
+      end
+      @klass.send(:define_method, :make_pizza) do
+        "yum"
       end
       @workflow = Newflow::Workflow.new(@obj, @definition)
     end
@@ -49,6 +52,11 @@ describe "A workflow" do
     it "should begin in start state" do
       @workflow.should be_start
       @obj.workflow_state.should == "start"
+    end
+
+    it "should trigger the on_entry when going to finish" do
+      @obj.should_receive :make_pizza
+      @workflow.transition!
     end
 
     it "should be able to transition to the finish state" do

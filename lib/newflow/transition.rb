@@ -1,11 +1,12 @@
 module Newflow
   class Transition
     attr_reader :target_state, :predicate, :predicate_name, :trigger
+
     def initialize(target_state,opts)
       @target_state = target_state
       if_meth      = opts[:if]
       unless_meth  = opts[:unless]
-      @trigger      = opts[:trigger]
+      @trigger      = Trigger.new(opts[:trigger])
       logger.debug "State.transitions_to: target_state=#{target_state} if=#{if_meth.inspect} unless=#{unless_meth.inspect} trigger=#{@trigger}"
       unless @target_state \
           &&  (if_meth || unless_meth) \
@@ -34,12 +35,7 @@ module Newflow
     end
 
     def trigger!(workflow)
-      return false unless trigger
-      if trigger.is_a?(Symbol)
-        workflow.send(trigger)
-      else
-        trigger.call
-      end
+      trigger.run!(workflow)
     end
 
     def logger
