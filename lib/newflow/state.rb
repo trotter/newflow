@@ -25,9 +25,9 @@ module Newflow
       transition_to = @transitions.detect { |t| t.can_transition?(workflow) }
       if transition_to
         transition_to.trigger!(workflow) if do_trigger # TODO: TEST
-        transition_to.target_state
+        [transition_to.target_state, true]
       else
-        @name
+        [@name, false]
       end
     end
 
