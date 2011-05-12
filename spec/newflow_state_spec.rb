@@ -27,12 +27,12 @@ describe "A valid start state" do
 
   it "should return the transition state when the predicate is true" do
     @workflow.should_receive(:go_to_finish?).and_return true
-    @state.run(@workflow).should == :finish
+    @state.run(@workflow).should == [:finish, true]
   end
 
   it "should return the its own state when the predicate is false" do
     @workflow.should_receive(:go_to_finish?).and_return false
-    @state.run(@workflow).should == :start
+    @state.run(@workflow).should == [:start, false]
   end
 end
 
